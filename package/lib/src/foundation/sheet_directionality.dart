@@ -21,28 +21,10 @@ class _SheetDirectionalityState extends State<SheetDirectionality> {
   }
 }
 
-abstract class SheetAxisDirection {
-  const factory SheetAxisDirection.fromBottom() = BottomSheetAxisDirection;
-
-  const factory SheetAxisDirection.fromTop() = TopSheetAxisDirection;
-
-  const factory SheetAxisDirection.fromLeft() = LeftSheetAxisDirection;
-
-  const factory SheetAxisDirection.fromRight() = RightSheetAxisDirection;
-}
-
-class BottomSheetAxisDirection implements SheetAxisDirection {
-  const BottomSheetAxisDirection();
-}
-
-class TopSheetAxisDirection implements SheetAxisDirection {
-  const TopSheetAxisDirection();
-}
-
-class LeftSheetAxisDirection implements SheetAxisDirection {
-  const LeftSheetAxisDirection();
-}
-
-class RightSheetAxisDirection implements SheetAxisDirection {
-  const RightSheetAxisDirection();
+enum SheetAxisDirection {
+  fromBottom,
+  fromTop,
+  fromLeft,
+  fromRight,
+  ;
 }

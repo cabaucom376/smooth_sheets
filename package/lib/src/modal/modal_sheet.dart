@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../smooth_sheets.dart';
-import '../foundation/sheet_directionality.dart';
 import '../foundation/sheet_gesture_tamperer.dart';
 import '../internal/double_utils.dart';
 
@@ -20,7 +19,7 @@ class ModalSheetPage<T> extends Page<T> {
     super.arguments,
     super.restorationId,
     this.maintainState = true,
-    this.axisDirection = const SheetAxisDirection.fromBottom(),
+    this.axisDirection = SheetAxisDirection.fromBottom,
     this.barrierDismissible = true,
     this.swipeDismissible = false,
     this.fullscreenDialog = false,
@@ -108,7 +107,7 @@ class ModalSheetRoute<T> extends PageRoute<T> with ModalSheetRouteMixin<T> {
     super.fullscreenDialog,
     required this.builder,
     this.maintainState = true,
-    this.axisDirection = const SheetAxisDirection.fromBottom(),
+    this.axisDirection = SheetAxisDirection.fromBottom,
     this.barrierDismissible = true,
     this.barrierLabel,
     this.barrierColor = Colors.black54,
@@ -193,11 +192,10 @@ mixin ModalSheetRouteMixin<T> on ModalRoute<T> {
   ) {
     // Determine the transition tween based on the axis direction
     final Offset startOffset = switch (axisDirection) {
-      BottomSheetAxisDirection() => const Offset(0, 1),
-      TopSheetAxisDirection() => const Offset(0, -1),
-      LeftSheetAxisDirection() => const Offset(-1, 0),
-      RightSheetAxisDirection() => const Offset(1, 0),
-      _ => const Offset(0, 1),
+      SheetAxisDirection.fromBottom => const Offset(0, 1),
+      SheetAxisDirection.fromTop => const Offset(0, -1),
+      SheetAxisDirection.fromLeft => const Offset(-1, 0),
+      SheetAxisDirection.fromRight => const Offset(1, 0),
     };
 
     final transitionTween = Tween(begin: startOffset, end: Offset.zero);
