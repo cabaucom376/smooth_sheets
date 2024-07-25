@@ -3,7 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../foundation/sheet_drag.dart';
+import '../../smooth_sheets.dart';
+import '../foundation/sheet_directionality.dart';
 import '../foundation/sheet_gesture_tamperer.dart';
 import '../internal/double_utils.dart';
 
@@ -19,6 +20,7 @@ class ModalSheetPage<T> extends Page<T> {
     super.arguments,
     super.restorationId,
     this.maintainState = true,
+    this.axisDirection = const SheetAxisDirection.fromBottom(),
     this.barrierDismissible = true,
     this.swipeDismissible = false,
     this.fullscreenDialog = false,
@@ -38,6 +40,8 @@ class ModalSheetPage<T> extends Page<T> {
   final bool fullscreenDialog;
 
   final Color? barrierColor;
+
+  final SheetAxisDirection axisDirection;
 
   final bool barrierDismissible;
 
@@ -71,6 +75,9 @@ class _PageBasedModalSheetRoute<T> extends PageRoute<T>
   bool get maintainState => _page.maintainState;
 
   @override
+  SheetAxisDirection get axisDirection => _page.axisDirection;
+
+  @override
   Color? get barrierColor => _page.barrierColor;
 
   @override
@@ -101,6 +108,7 @@ class ModalSheetRoute<T> extends PageRoute<T> with ModalSheetRouteMixin<T> {
     super.fullscreenDialog,
     required this.builder,
     this.maintainState = true,
+    this.axisDirection = const SheetAxisDirection.fromBottom(),
     this.barrierDismissible = true,
     this.barrierLabel,
     this.barrierColor = Colors.black54,
@@ -110,6 +118,7 @@ class ModalSheetRoute<T> extends PageRoute<T> with ModalSheetRouteMixin<T> {
   });
 
   final WidgetBuilder builder;
+  final SheetAxisDirection axisDirection;
 
   @override
   final Color? barrierColor;
@@ -134,13 +143,17 @@ class ModalSheetRoute<T> extends PageRoute<T> with ModalSheetRouteMixin<T> {
 
   @override
   Widget buildContent(BuildContext context) {
-    return builder(context);
+    return SheetDirectionality(
+      axisDirection: axisDirection,
+      child: builder(context),
+    );
   }
 }
 
 mixin ModalSheetRouteMixin<T> on ModalRoute<T> {
   bool get swipeDismissible;
   Curve get transitionCurve;
+  SheetAxisDirection get axisDirection;
 
   @override
   bool get opaque => false;
@@ -159,13 +172,16 @@ mixin ModalSheetRouteMixin<T> on ModalRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    return switch (swipeDismissible) {
-      true => TamperSheetGesture(
-          tamperer: _swipeDismissibleController,
-          child: buildContent(context),
-        ),
-      false => buildContent(context),
-    };
+    return SheetDirectionality(
+      axisDirection: axisDirection,
+      child: switch (swipeDismissible) {
+        true => TamperSheetGesture(
+            tamperer: _swipeDismissibleController,
+            child: buildContent(context),
+          ),
+        false => buildContent(context),
+      },
+    );
   }
 
   @override
@@ -175,11 +191,22 @@ mixin ModalSheetRouteMixin<T> on ModalRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final transitionTween = Tween(begin: const Offset(0, 1), end: Offset.zero);
+    // Determine the transition tween based on the axis direction
+    final Offset startOffset = switch (axisDirection) {
+      BottomSheetAxisDirection() => const Offset(0, 1),
+      TopSheetAxisDirection() => const Offset(0, -1),
+      LeftSheetAxisDirection() => const Offset(-1, 0),
+      RightSheetAxisDirection() => const Offset(1, 0),
+      _ => const Offset(0, 1),
+    };
+
+    final transitionTween = Tween(begin: startOffset, end: Offset.zero);
+
     // In the middle of a dismiss gesture drag,
     // let the transition be linear to match finger motions.
     final curve =
         navigator!.userGestureInProgress ? Curves.linear : this.transitionCurve;
+
     return SlideTransition(
       position: animation.drive(
         transitionTween.chain(CurveTween(curve: curve)),

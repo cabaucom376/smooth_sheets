@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../foundation/sheet_controller.dart';
+import '../foundation/sheet_directionality.dart';
 import '../internal/double_utils.dart';
 import 'modal_sheet.dart';
 
@@ -416,6 +417,7 @@ class CupertinoModalSheetPage<T> extends Page<T> {
     super.arguments,
     super.restorationId,
     this.maintainState = true,
+    this.axisDirection = const SheetAxisDirection.fromBottom(),
     this.barrierDismissible = true,
     this.swipeDismissible = false,
     this.fullscreenDialog = false,
@@ -435,6 +437,8 @@ class CupertinoModalSheetPage<T> extends Page<T> {
   final bool fullscreenDialog;
 
   final Color? barrierColor;
+
+  final SheetAxisDirection axisDirection;
 
   final bool barrierDismissible;
 
@@ -475,6 +479,9 @@ class _PageBasedCupertinoModalSheetRoute<T>
   String? get barrierLabel => _page.barrierLabel;
 
   @override
+  SheetAxisDirection get axisDirection => _page.axisDirection;
+
+  @override
   bool get barrierDismissible => _page.barrierDismissible;
 
   @override
@@ -499,6 +506,7 @@ class CupertinoModalSheetRoute<T> extends _BaseCupertinoModalSheetRoute<T> {
     super.fullscreenDialog,
     required this.builder,
     this.maintainState = true,
+    this.axisDirection = const SheetAxisDirection.fromBottom(),
     this.barrierDismissible = true,
     this.swipeDismissible = false,
     this.barrierLabel,
@@ -508,6 +516,7 @@ class CupertinoModalSheetRoute<T> extends _BaseCupertinoModalSheetRoute<T> {
   });
 
   final WidgetBuilder builder;
+  final SheetAxisDirection axisDirection;
 
   @override
   final Color? barrierColor;
