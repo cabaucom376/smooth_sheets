@@ -16,6 +16,7 @@ export 'sheet_content_scaffold.dart'
         SheetContentScaffold,
         StickyBottomBarVisibility;
 export 'sheet_controller.dart' show DefaultSheetController, SheetController;
+export 'sheet_directionality.dart' show SheetAxisDirection, SheetDirectionality;
 export 'sheet_drag.dart'
     show
         SheetDragCancelDetails,

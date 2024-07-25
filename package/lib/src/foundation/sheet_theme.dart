@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import 'keyboard_dismissible.dart';
+import 'sheet_directionality.dart';
 import 'sheet_physics.dart';
 
 /// A theme for descendant sheets.
@@ -50,11 +51,15 @@ class SheetThemeData {
   /// behavior of a sheet.
   const SheetThemeData({
     this.keyboardDismissBehavior,
+    this.axisDirection,
     this.physics,
   });
 
   /// Determines when the on-screen keyboard should be dismissed.
   final SheetKeyboardDismissBehavior? keyboardDismissBehavior;
+
+  /// The axis direction of the sheet.
+  final SheetAxisDirection? axisDirection;
 
   /// The physics that is used by the sheet.
   final SheetPhysics? physics;
@@ -63,12 +68,14 @@ class SheetThemeData {
   /// the new values.
   SheetThemeData copyWith({
     SheetKeyboardDismissBehavior? keyboardDismissBehavior,
+    SheetAxisDirection? axisDirection,
     SheetPhysics? physics,
     SheetPhysics? basePhysics,
   }) =>
       SheetThemeData(
         keyboardDismissBehavior:
             keyboardDismissBehavior ?? this.keyboardDismissBehavior,
+        axisDirection: axisDirection ?? this.axisDirection,
         physics: physics ?? this.physics,
       );
 
@@ -78,12 +85,14 @@ class SheetThemeData {
       other is SheetThemeData &&
           runtimeType == other.runtimeType &&
           keyboardDismissBehavior == other.keyboardDismissBehavior &&
+          axisDirection == other.axisDirection &&
           physics == other.physics;
 
   @override
   int get hashCode => Object.hash(
         runtimeType,
         keyboardDismissBehavior,
+        axisDirection,
         physics,
       );
 }
